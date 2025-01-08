@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/peerjs@1.3.1/dist/peerjs.min.js"></script>
+    <script src="video-component.js"></script>
+</head>
+<body>
+    <!-- La escena de A-Frame -->
+    <a-scene id="aframe-scene" style="display: none;">
+        <!-- Sala de control con una pantalla y algunos controles -->
+        <!-- Pantalla para ver la cámara -->
+        <a-box id="video-box" position="0 1.5 -3"  width="5" height="2"></a-box>
+        
+        <!-- Consolas de control en la sala -->
+        <a-box position="-1.5 0.75 -2.5" depth="0.5" width="1.5" height="0.5" color="#4b4b4b"></a-box>
+        <a-box position="1.5 0.75 -2.5" depth="0.5" width="1.5" height="0.5" color="#4b4b4b"></a-box>
+        <a-box position="0 0.5 -2.8" depth="0.2" width="4" height="0.3" color="#b0b0b0"></a-box>
+        
+        <!-- Paredes de la sala para dar la impresión de estar dentro -->
+        <a-box position="0 1.5 -4.5" depth="0.1" width="8" height="3" color="#b0b0b0"></a-box> <!-- Pared frontal -->
+        <a-box position="-4 1.5 -2.5" depth="0.1" width="5" height="3" rotation="0 90 0" color="#b0b0b0"></a-box> <!-- Pared izquierda -->
+        <a-box position="4 1.5 -2.5" depth="0.1" width="5" height="3" rotation="0 90 0" color="#b0b0b0"></a-box> <!-- Pared derecha -->
+        <a-box position="0 3 -2.5" depth="5" width="8" height="0.1" color="#b0b0b0"></a-box> <!-- Techo -->
+        
+        <!-- Suelo de la sala -->
+        <a-plane rotation="-90 0 0" width="8" height="5" color="#808080" position="0 0 -2.5"></a-plane>
+    </a-scene>
+
+    <script>
+      // Preguntar al usuario el rol: transmisor o receptor
+      window.onload = function () {
+          const role = prompt("¿Quieres ser el transmisor (t) o el receptor (r)? Introduce 't' para transmisor o 'r' para receptor.");
+
+          // Seleccionar el elemento de la escena
+          const scene = document.getElementById('aframe-scene');
+
+          // Mostrar la escena solo cuando se seleccione un rol válido
+          if (role === 't' || role === 'r') {
+              // Mostrar la escena de A-Frame
+              scene.style.display = "block";
+
+              if (role === 't') {
+                  // Empezar como transmisor
+                  document.querySelector('#video-box').setAttribute('camera-canvas-texture', 'role: transmitter');
+              } else if (role === 'r') {
+                  // Empezar como receptor
+                  document.querySelector('#video-box').setAttribute('camera-canvas-texture', 'role: receiver');
+              }
+          } else {
+              alert("Opción inválida. Recarga la página e introduce 't' o 'r'.");
+          }
+      };
+    </script>
+</body>
+</html>
