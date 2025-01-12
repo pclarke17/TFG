@@ -2,10 +2,12 @@
 <html>
 <head>
     <meta charset="utf-8">
+    <title>Transmisión Multimedia VR</title>
     <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/peerjs@1.3.1/dist/peerjs.min.js"></script>
-    <script src="Camara-component.js"></script>
-    <script src="video-component.js"></script>
+
+    <script src="Camara-component.js" defer></script>
+    <script src="video-component.js" defer></script>
     <style>
         body, html {
             margin: 0;
@@ -14,7 +16,7 @@
             height: 100%;
             background-color: #f0f0f0;
         }
-        #menu, #source-menu {
+        .menu {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -24,8 +26,10 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             padding: 20px;
             border-radius: 10px;
+            z-index: 1000;
+            position: relative;
         }
-        #menu button, #source-menu button {
+        .menu button {
             margin: 15px;
             padding: 15px 30px;
             font-size: 1.2rem;
@@ -36,94 +40,88 @@
             border-radius: 5px;
             transition: background-color 0.3s;
         }
-        #menu button:hover, #source-menu button:hover {
+        .menu button:hover {
             background-color: #0056b3;
         }
     </style>
 </head>
 <body>
-    <div id="source-menu">
-        <h1>Elige la Fuente de Transmisión</h1>
-        <button id="camara">Cámara en Vivo</button>
-        <button id="video">Video Almacenado</button>
+    <!-- Menú principal para elegir transmisor o receptor -->
+    <div id="menu-rol" class="menu">
+        <h1>Selecciona tu Rol</h1>
+        <button id="transmitir" data-role="transmitter">Transmitir</button>
+        <button id="recibir" data-role="receiver">Recibir</button>
     </div>
 
-    <div id="menu" style="display: none;">
-        <h1>Elige una Opción</h1>
-        <button id="transmitir">Transmitir</button>
-        <button id="recibir">Recibir</button>
+    <!-- Menú de selección de medio para el transmisor -->
+    <div id="menu-transmitir" class="menu" style="display: none;">
+        <h1>Selecciona el Medio</h1>
+        <button id="camera" data-role="transmitter" data-source="camera">Usar Cámara</button>
+        <button id="video" data-role="transmitter" data-source="video">Usar Video</button>
     </div>
 
-    <!-- La escena de A-Frame -->
-    <a-scene id="aframe-scene" style="display: none;">
-        <!-- Sala de control con una pantalla y algunos controles -->
-        <!-- Pantalla para ver la cámara o video -->
-        <a-box id="video-box" geometry="primitive: plane; width: 4; height: 2" position="0 1.5 -3" material="color: #000000"></a-box>
-        
-        <!-- Consolas de control en la sala -->
-        <a-box position="-1.5 0.75 -2.5" depth="0.5" width="1.5" height="0.5" color="#4b4b4b"></a-box>
-        <a-box position="1.5 0.75 -2.5" depth="0.5" width="1.5" height="0.5" color="#4b4b4b"></a-box>
-        <a-box position="0 0.5 -2.8" depth="0.2" width="4" height="0.3" color="#b0b0b0"></a-box>
-        
-        <!-- Paredes de la sala para dar la impresión de estar dentro -->
-        <a-box position="0 1.5 -4.5" depth="0.1" width="8" height="3" color="#b0b0b0"></a-box> <!-- Pared frontal -->
-        <a-box position="-4 1.5 -2.5" depth="0.1" width="5" height="3" rotation="0 90 0" color="#b0b0b0"></a-box> <!-- Pared izquierda -->
-        <a-box position="4 1.5 -2.5" depth="0.1" width="5" height="3" rotation="0 90 0" color="#b0b0b0"></a-box> <!-- Pared derecha -->
-        <a-box position="0 3 -2.5" depth="5" width="8" height="0.1" color="#b0b0b0"></a-box> <!-- Techo -->
-        
-        <!-- Suelo de la sala -->
-        <a-plane rotation="-90 0 0" width="8" height="5" color="#808080" position="0 0 -2.5"></a-plane>
+    <!-- A-Frame Scene -->
+    <a-scene>
+        <a-box id="video-box" position="0 1.5 -3"  width="4" height="2"></a-box>
     </a-scene>
 
     <script>
-        let selectedSource = null;
+        const menuRol = document.getElementById('menu-rol');
+        const menuTransmitir = document.getElementById('menu-transmitir');
+        const videoBox = document.querySelector('#video-box');
+        const scene = document.querySelector('a-scene');
 
-        // Manejar el menú de selección de fuente
-        document.getElementById('camara').addEventListener('click', function () {
-            selectedSource = 'c';
-            document.getElementById('source-menu').style.display = 'none';
-            document.getElementById('menu').style.display = 'flex';
+        let currentRole = null; // Almacenar el rol actual
+
+        // Botón para seleccionar el rol de transmisor
+        document.getElementById('transmitir').addEventListener('click', () => {
+            currentRole = 'transmitter';
+            menuRol.style.display = 'none';
+            menuTransmitir.style.display = 'flex';
+            console.log('Rol seleccionado: Transmisor');
         });
 
-        document.getElementById('video').addEventListener('click', function () {
-            selectedSource = 'v';
-            document.getElementById('source-menu').style.display = 'none';
-            document.getElementById('menu').style.display = 'flex';
-        });
-
-        // Manejar el menú de selección de rol
-        document.getElementById('transmitir').addEventListener('click', function () {
-            if (selectedSource === 'c' || selectedSource === 'v') {
-                iniciarEscena('transmitter', selectedSource);
+        // Botón para seleccionar el rol de receptor
+        document.getElementById('recibir').addEventListener('click', () => {
+            currentRole = 'receiver';
+            menuRol.style.display = 'none';
+            const peerId = prompt('Ingrese el Peer ID del transmisor:');
+            if (peerId) {
+                videoBox.setAttribute('camera-stream', `role: receiver; peerId: ${peerId}`);
+                videoBox.setAttribute('visible', 'true');
+                console.log(`Rol seleccionado: Receptor. Conectándose al Peer ID: ${peerId}`);
             } else {
-                alert("Por favor, selecciona una fuente de transmisión antes.");
+                alert('Por favor, ingrese un Peer ID válido.');
+                menuRol.style.display = 'flex';
             }
         });
 
-        document.getElementById('recibir').addEventListener('click', function () {
-            iniciarEscena('receiver');
+        // Botón para usar la cámara como medio
+        document.getElementById('camera').addEventListener('click', () => {
+            menuTransmitir.style.display = 'none';
+            videoBox.setAttribute('camera-stream', 'role: transmitter');
+            videoBox.setAttribute('visible', 'true');
+            console.log('Fuente seleccionada: Cámara');
         });
 
-        function iniciarEscena(role, source = null) {
-            // Ocultar el menú
-            document.getElementById('menu').style.display = 'none';
-            // Mostrar la escena de A-Frame
-            const scene = document.getElementById('aframe-scene');
-            scene.style.display = "block";
+        // Botón para usar un video como medio
+        document.getElementById('video').addEventListener('click', () => {
+            menuTransmitir.style.display = 'none';
+            videoBox.setAttribute('video-stream', 'role: transmitter;');
+            videoBox.setAttribute('visible', 'true');
+            console.log('Fuente seleccionada: Video');
+        });
 
-            if (role === 'transmitter') {
-                if (source === 'c') {
-                    // Empezar como transmisor usando la cámara en vivo
-                    document.querySelector('#video-box').setAttribute('camera-canvas-texture', 'role: transmitter');
-                } else if (source === 'v') {
-                    // Empezar como transmisor usando un video almacenado
-                    document.querySelector('#video-box').setAttribute('camera-canvas-texture1', 'role: transmitter; useVideo: true');
-                }
-            } else if (role === 'receiver') {
-                // Empezar como receptor
-                document.querySelector('#video-box').setAttribute('camera-canvas-texture1', 'role: receiver');
-            }
+        // Deshabilitar interacción en A-Frame mientras los menús están visibles
+        scene.style.pointerEvents = 'none';
+
+        // Habilitar interacción con A-Frame después de seleccionar una opción
+        function enableSceneInteraction() {
+            scene.style.pointerEvents = 'auto';
         }
+
+        // Exponer el rol actual al resto del código
+        window.getCurrentRole = () => currentRole;
     </script>
 </body>
 </html>

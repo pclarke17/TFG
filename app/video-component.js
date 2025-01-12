@@ -1,6 +1,7 @@
-AFRAME.registerComponent('camera-canvas-texture1', {
+AFRAME.registerComponent('video-stream', {
   schema: {
-    role: { type: 'string', default: '' } // Puede ser 'transmitter' o 'receiver'
+    role: { type: 'string', default: '' },
+    peerid: {type:'string',default:''} 
   },
 
   init: function () {
@@ -12,7 +13,7 @@ AFRAME.registerComponent('camera-canvas-texture1', {
     videoElement.src = "video.mp4";  // Ruta del video
     videoElement.setAttribute('autoplay', 'true');
     videoElement.setAttribute('playsinline', 'true');
-    videoElement.setAttribute('muted', 'true'); // El video debe estar silenciado para que se reproduzca en móviles
+    videoElement.setAttribute('muted', 'false'); // El video debe estar silenciado para que se reproduzca en móviles
     videoElement.setAttribute('loop', 'true'); // Hacer que el video se repita automáticamente
     videoElement.crossOrigin = "anonymous"; // Añadir crossOrigin para mayor compatibilidad
 
@@ -28,7 +29,10 @@ AFRAME.registerComponent('camera-canvas-texture1', {
     playButton.style.display = 'none';
     document.body.appendChild(playButton);
 
-   
+    // Mostrar el botón solo en dispositivos móviles
+    if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+      playButton.style.display = 'block';
+    }
 
     playButton.addEventListener('click', () => {
       videoElement.play().then(() => {
@@ -49,6 +53,7 @@ AFRAME.registerComponent('camera-canvas-texture1', {
     // Crear la textura de THREE.js a partir del canvas
     const texture = new THREE.Texture(canvas);
     el.getObject3D('mesh').material.map = texture;
+el.getObject3D('mesh').material.needsUpdate = true;
 
     let peer = null;
 
@@ -145,6 +150,7 @@ AFRAME.registerComponent('camera-canvas-texture1', {
     // Función para conectarse como receptor
     function startReceiver() {
       console.log("Intentando iniciar PeerJS como receptor...");
+      peerid = id
     
       peer = new Peer({
         host: '0.peerjs.com',
@@ -161,10 +167,10 @@ AFRAME.registerComponent('camera-canvas-texture1', {
           ]
         }
       });
+    
       peer.on('open', (id) => {
         console.log('Receptor listo. ID de peer:', id);
     
-        const transmitterId = prompt("Ingrese el Peer ID del transmisor:");
         if (!transmitterId) {
           alert('No se ingresó un Peer ID válido.');
           return;
@@ -184,16 +190,14 @@ AFRAME.registerComponent('camera-canvas-texture1', {
     
               videoElement.srcObject = remoteStream;
               videoElement.onloadedmetadata = () => {
-                console.log("Stream remoto está listo, intentando reproducir...");
-                videoElement.play().then(() => {
-                  console.log("Video recibido está reproduciéndose.");
-                  updateCanvas();
-                }).catch(err => {
-                  console.error("Error al intentar reproducir el video remoto:", err);
-                  alert("Toca la pantalla para comenzar a reproducir el video.");
-                });
-              };
-    
+              console.log("Metadatos del video cargados. Intentando reproducir el video...");
+              videoElement.play().then(() => {
+                console.log("Video de archivo está reproduciéndose.");
+                updateCanvas();
+              }).catch(err => {
+                console.error("Error al intentar reproducir el video automáticamente:", err);
+              });
+            };
               // Agregar un evento para que el usuario toque para reproducir
               videoElement.addEventListener('click', () => {
                 videoElement.play().catch(err => {
@@ -224,6 +228,7 @@ AFRAME.registerComponent('camera-canvas-texture1', {
         }
       });
     }
+    
     // Función para actualizar el canvas y la textura
     function updateCanvas() {
       if (!videoElement.paused && !videoElement.ended) {
@@ -236,6 +241,7 @@ AFRAME.registerComponent('camera-canvas-texture1', {
       }
       requestAnimationFrame(updateCanvas);
     }
+
     // Función para crear un stream falso
     function createFakeStream() {
       const fakeCanvas = document.createElement('canvas');

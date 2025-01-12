@@ -1,4 +1,4 @@
-AFRAME.registerComponent('camera-canvas-texture', {
+AFRAME.registerComponent('camera-stream', {
   schema: {
     role: { type: 'string', default: '' } // Puede ser 'transmitter' o 'receiver'
   },
@@ -22,7 +22,7 @@ AFRAME.registerComponent('camera-canvas-texture', {
     // Crear la textura de THREE.js a partir del canvas
     const texture = new THREE.Texture(canvas);
     el.getObject3D('mesh').material.map = texture;
-
+    el.getObject3D('mesh').material.needsUpdate = true;
     let peer = null;
 
     if (role === 'transmitter') {
