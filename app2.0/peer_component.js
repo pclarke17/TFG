@@ -1,43 +1,32 @@
-export const PeerManager = (() => {
-  let peer = null;
+export class PeerManager {
+    static peer = null;
 
-  function initializePeer(role) {
-      if (!peer) {
-          peer = new Peer({
-              host: '0.peerjs.com',
-              port: 443,
-              path: '/',
-              secure: true,
-              debug: 3
-          });
+    static async init(role) {
+        if (!PeerManager.peer) {
+            PeerManager.peer = new window.Peer();
+            
+            return new Promise((resolve, reject) => {
+                PeerManager.peer.on('open', (id) => {
+                    console.log(`PeerJS inicializado. ID (${role}): ${id}`);
 
-          peer.on('open', (id) => {
-              console.log(`PeerJS inicializado. ID (${role}): ${id}`);
+                    if (role === 'transmitter') {
+                        const ws = new WebSocket("ws://localhost:8080");
+                        ws.onopen = () => ws.send(JSON.stringify({ peerId: id }));
+                    }
 
-              if (role === 'transmitter') {
-                  // Mostrar el Peer ID del transmisor en la pantalla
-                  const idDisplay = document.createElement('div');
-                  idDisplay.style.position = 'fixed';
-                  idDisplay.style.top = '10px';
-                  idDisplay.style.left = '10px';
-                  idDisplay.style.padding = '10px';
-                  idDisplay.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-                  idDisplay.style.color = 'white';
-                  idDisplay.style.borderRadius = '5px';
-                  idDisplay.style.zIndex = '1000';
-                  idDisplay.innerText = `Transmisor listo. ID: ${id}`;
-                  document.body.appendChild(idDisplay);
-              }
-          });
+                    resolve(PeerManager.peer);
+                });
 
-          peer.on('error', (err) => {
-              console.error('Error en PeerJS:', err);
-          });
-      }
-      return peer;
-  }
+                PeerManager.peer.on('error', (err) => {
+                    console.error("Error en PeerJS:", err);
+                    reject(err);
+                });
+            });
+        }
+        return PeerManager.peer;
+    }
 
-  return {
-      getPeer: (role) => initializePeer(role),
-  };
-})();
+    static getPeer() {
+        return PeerManager.peer;
+    }
+}

@@ -9,19 +9,16 @@ AFRAME.registerComponent('video-stream', {
   init: function () {
     this.role = this.data.role;
     this.peer = PeerManager.getPeer(this.role);
-
     this.videoElement = document.createElement('video');
-    this.videoElement.src = "video.mp4"; // Ruta del video almacenado
-    this.videoElement.setAttribute('autoplay', 'false'); // Evitar autoplay para manejarlo manualmente
+    this.videoElement.src = "video.mp4"; 
+    this.videoElement.setAttribute('autoplay', 'false'); 
     this.videoElement.setAttribute('playsinline', 'true');
-    this.videoElement.setAttribute('muted', 'true'); // Para evitar bloqueos en navegadores móviles
+    this.videoElement.setAttribute('muted', 'true'); 
     this.videoElement.setAttribute('loop', 'true');
     this.videoElement.crossOrigin = "anonymous";
 
-    // Crear botón de reproducción manual
     this.createPlayButton();
 
-    // Canvas y Textura para A-Frame
     this.canvas = document.createElement('canvas');
     this.ctx = this.canvas.getContext('2d', { willReadFrequently: true });
     this.canvas.width = 640;
@@ -37,13 +34,6 @@ AFRAME.registerComponent('video-stream', {
         console.error("No se pudo asignar la textura, el objeto 3D no está disponible.");
       }
     });
-
-    this.videoElement.oncanplay = () => {
-      console.log("El video está listo para reproducirse.");
-      if (this.role === 'transmitter') {
-        this.startTransmitter();
-      }
-    };
 
     if (this.role === 'receiver') {
       this.startReceiver();
@@ -67,7 +57,6 @@ AFRAME.registerComponent('video-stream', {
     playButton.style.cursor = 'pointer';
     document.body.appendChild(playButton);
 
-    // Mostrar siempre el botón hasta que se haga clic
     playButton.style.display = 'block';
 
     playButton.addEventListener('click', () => {
@@ -75,6 +64,10 @@ AFRAME.registerComponent('video-stream', {
         console.log("El video se está reproduciendo.");
         playButton.style.display = 'none';
         this.updateCanvas();
+
+        if (this.role === 'transmitter') {
+          this.startTransmitter();
+        }
       }).catch(err => {
         console.error("Error al intentar reproducir el video:", err);
       });
@@ -83,39 +76,41 @@ AFRAME.registerComponent('video-stream', {
 
   startTransmitter: function () {
     console.log("Iniciando PeerJS como transmisor...");
-    this.videoElement.play().then(() => {
-      console.log("El video se está reproduciendo.");
-      this.updateCanvas();
 
-      const stream = this.videoElement.captureStream();
-      this.peer.on('connection', (conn) => {
-        conn.on('open', () => {
-          const call = this.peer.call(conn.peer, stream);
-          console.log("Transmisión de video enviada.");
-        });
+    const stream = this.videoElement.captureStream();
+    this.peer.on('connection', (conn) => {
+      conn.on('open', () => {
+        const call = this.peer.call(conn.peer, stream);
+        console.log("Transmisión de video enviada.");
       });
+    });
 
-      this.peer.on('call', (incomingCall) => {
-        console.log("Llamada entrante recibida. Respondiendo con el stream del video...");
-        incomingCall.answer(stream);
-      });
-    }).catch(err => console.error("Error al reproducir el video:", err));
+    this.peer.on('call', (incomingCall) => {
+      console.log("Llamada entrante recibida. Respondiendo con el stream del video...");
+      incomingCall.answer(stream);
+    });
   },
 
   startReceiver: function () {
-    console.log("Iniciando PeerJS como receptor...");
+    console.log("Iniciando PeerJS como receptor de video...");
     const transmitterId = this.data.peerid;
     if (!transmitterId) return console.error("Peer ID del transmisor no proporcionado.");
 
+    console.log(`Conectándose a PeerJS ID del transmisor: ${transmitterId}`);
+
     const call = this.peer.call(transmitterId, null);
     call.on('stream', (remoteStream) => {
-      console.log("Recibiendo stream de video...");
-      this.videoElement.srcObject = remoteStream;
-      this.videoElement.oncanplay = () => {
-        console.log("El stream remoto está listo para reproducirse.");
-        this.videoElement.play();
-        this.updateCanvas();
-      };
+        console.log("Recibiendo stream de video...");
+        this.videoElement.srcObject = remoteStream;
+        this.videoElement.oncanplay = () => {
+            console.log("El stream remoto de video está listo.");
+            this.videoElement.play();
+            this.updateCanvas();
+        };
+    });
+
+    call.on('error', (err) => {
+        console.error("Error en la llamada de video:", err);
     });
   },
 
@@ -123,8 +118,6 @@ AFRAME.registerComponent('video-stream', {
     if (this.videoElement.readyState >= this.videoElement.HAVE_ENOUGH_DATA) {
       this.ctx.drawImage(this.videoElement, 0, 0, this.canvas.width, this.canvas.height);
       this.texture.needsUpdate = true;
-    } else {
-      console.warn("El video aún no tiene suficientes datos para actualizar el canvas.");
     }
     requestAnimationFrame(this.updateCanvas.bind(this));
   }

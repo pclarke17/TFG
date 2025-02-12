@@ -6,9 +6,10 @@
     <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/peerjs@1.3.1/dist/peerjs.min.js"></script>
     <script type="module" src="peer_component.js"></script>
-<script type="module" src="Camara-component.js"></script>
-<script type="module" src="obs-component.js"></script>
-<script type="module" src="video-component.js"></script>
+    <script type="module" src="obs-component.js"></script>
+    <script type="module" src="video-component.js"></script>
+    <script type="module" src="scene-camera-componete.js"></script>
+
     <style>
         body, html {
             margin: 0;
@@ -57,30 +58,42 @@
 
     <!-- A-Frame Scene -->
     <a-scene>
+        <!-- Cámara principal con movimiento (Jugador) -->
+        <a-entity id="player-camera" camera position="0 2 0" look-controls wasd-controls></a-entity>
+
+        <!-- Modelo del personaje -->
+        <a-entity gltf-model="https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/models/gltf/Soldier.glb"
+                  position="0 0 0" scale="1 1 1" animation-mixer>
+            <!-- Cámara en la cabeza del personaje -->
+            <a-entity id="scene-camera" camera position="0 2 0.5"></a-entity>
+        </a-entity>
+
         <!-- Pantalla para Video Almacenado -->
-        <a-box id="video-screen" position="-5 2 -4" geometry="primitive: plane; width: 4; height: 2"  video-stream="role: transmitter"></a-box>
-        
-        <!-- Pantalla para Cámara en Vivo -->
-        <a-box id="camera-screen" position="0 2 -4" geometry="primitive: plane; width: 4; height: 2" camera-stream="role: transmitter"></a-box>
+        <a-box id="video-screen" position="-4 2 -4" geometry="primitive: plane; width: 4; height: 2" video-stream="role: transmitter"></a-box>
         
         <!-- Pantalla para OBS Virtual Camera -->
-        <a-box id="obs-screen" position="5 2 -4" geometry="primitive: plane; width: 4; height: 2"  obs-canvas-texture="role: transmitter"></a-box>
+        <a-box id="obs-screen" position="5 2 -4" geometry="primitive: plane; width: 4; height: 2" obs-canvas-texture="role: transmitter"></a-box>
+    
+        <!-- 📌 Nueva pantalla para mostrar la vista de la cámara de la escena -->
+        <a-box id="scene-camera-screen" position="0 2 -4"
+               geometry="primitive: plane; width: 4; height: 2"
+               observer-camera-stream></a-box>
     </a-scene>
 
     <script>
         const menuRol = document.getElementById('menu-rol');
         const videoBox = document.getElementById('video-screen');
-        const cameraBox = document.getElementById('camera-screen');
         const obsBox = document.getElementById('obs-screen');
+        const sceneCameraBox = document.getElementById('scene-camera-screen');
 
         document.getElementById('transmitir').addEventListener('click', () => {
             menuRol.style.display = 'none';
             videoBox.setAttribute('video-stream', 'role: transmitter');
             videoBox.setAttribute('visible', 'true');
-            cameraBox.setAttribute('camera-stream', 'role: transmitter');
-            cameraBox.setAttribute('visible', 'true');
             obsBox.setAttribute('obs-canvas-texture', 'role: transmitter');
             obsBox.setAttribute('visible', 'true');
+            sceneCameraBox.setAttribute('observer-camera-stream', 'role: transmitter');
+            sceneCameraBox.setAttribute('visible', 'true');
             console.log('Iniciando como Transmisor');
         });
 
@@ -88,10 +101,9 @@
             menuRol.style.display = 'none';
             const peerId = prompt('Ingrese el Peer ID del transmisor:');
             if (peerId) {
-                videoBox.setAttribute('video-stream', `role: receiver; peerid: ${peerId}`);
-                videoBox.setAttribute('visible', 'true');
-                cameraBox.setAttribute('camera-stream', `role: receiver; peerid: ${peerId}`);
-                obsBox.setAttribute('obs-canvas-texture', `role: receiver; peerid: ${peerId}`);
+                document.getElementById('video-screen').setAttribute('video-stream', `role: receiver; peerid: ${peerId}`);
+                document.getElementById('obs-screen').setAttribute('obs-canvas-texture', `role: receiver; peerid: ${peerId}`);
+                document.getElementById('scene-camera-screen').setAttribute('observer-camera-stream', `role: receiver; peerid: ${peerId}`);
                 console.log(`Conectándose al transmisor con Peer ID: ${peerId}`);
             } else {
                 alert('Debe ingresar un Peer ID válido.');
