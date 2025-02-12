@@ -9,107 +9,79 @@ AFRAME.registerComponent('obs-canvas-texture', {
   init: function () {
     this.role = this.data.role;
     this.peer = PeerManager.getPeer(this.role);
-    this.streamAssigned = false; // Para evitar duplicaciones sin bloquear la primera asignación.
+    this.streamAssigned = false;
 
+    // Crear el elemento video
     this.videoElement = document.createElement('video');
     this.videoElement.setAttribute('autoplay', 'true');
     this.videoElement.setAttribute('playsinline', 'true');
-    this.videoElement.setAttribute('muted', 'true'); // Para permitir autoplay sin bloqueo
+    this.videoElement.setAttribute('muted', 'true');
     this.videoElement.setAttribute('loop', 'true');
 
+    // Crear el canvas y la textura
     this.canvas = document.createElement('canvas');
     this.ctx = this.canvas.getContext('2d', { willReadFrequently: true });
     this.canvas.width = 640;
     this.canvas.height = 360;
-    this.texture = new THREE.Texture(this.canvas);
+    this.texture = new THREE.CanvasTexture(this.canvas);
 
+    // Asignar la textura al `a-box`
     this.el.addEventListener('loaded', () => {
       const mesh = this.el.getObject3D('mesh');
       if (mesh) {
         mesh.material.map = this.texture;
         mesh.material.needsUpdate = true;
       } else {
-        console.error("No se pudo asignar la textura, el objeto 3D no está disponible.");
+        console.error("No se pudo asignar la textura de OBS.");
       }
     });
 
-    if (this.role === 'transmitter') {
-      this.startTransmitter();
-    } else if (this.role === 'receiver') {
+    if (this.role === 'receiver') {
       this.startReceiver();
+    } else if (this.role === 'transmitter') {
+      this.startTransmitter();
     }
   },
 
   startTransmitter: function () {
-    console.log("Iniciando transmisión de OBS...");
+    console.log("Buscando OBS Virtual Camera...");
 
     navigator.mediaDevices.enumerateDevices()
-      .then((devices) => {
-        const obsCamera = devices.find(device => device.label.includes('OBS Virtual Camera'));
-        if (!obsCamera) {
-          console.error("OBS Virtual Camera no encontrada. Actívala en OBS.");
+      .then(devices => {
+        console.log("Dispositivos detectados:", devices.map(d => d.label));
+
+        const obsDevice = devices.find(device => device.label.includes("OBS Virtual Camera"));
+        if (!obsDevice) {
+          console.error("OBS Virtual Camera no encontrada. Actívala en OBS y recarga la página.");
+          alert("OBS Virtual Camera no encontrada. Asegúrate de que OBS está ejecutándose y la cámara virtual está activada.");
           return Promise.reject("OBS Virtual Camera no encontrada.");
         }
-        return navigator.mediaDevices.getUserMedia({ video: { deviceId: obsCamera.deviceId } });
+
+        console.log("OBS Virtual Camera encontrada:", obsDevice.label);
+        return navigator.mediaDevices.getUserMedia({ video: { deviceId: obsDevice.deviceId } });
       })
       .then((stream) => {
+        console.log("OBS capturado con éxito.");
         this.videoElement.srcObject = stream;
         this.videoElement.play().then(() => {
-          console.log("Transmisión OBS activada.");
+          console.log("Reproducción de OBS iniciada.");
           this.updateCanvas();
-
-          this.peer.on('connection', (conn) => {
-            conn.on('open', () => {
-              const call = this.peer.call(conn.peer, stream);
-              console.log("Transmisión OBS enviada al receptor.");
-            });
-          });
-
-          this.peer.on('call', (incomingCall) => {
-            console.log("Llamada entrante para OBS. Respondiendo...");
-            incomingCall.answer(stream);
-          });
-
         }).catch(err => console.error("Error al reproducir OBS:", err));
       })
       .catch(err => console.error("Error al acceder a OBS Virtual Camera:", err));
   },
 
-  startReceiver: function () {
-    console.log("Iniciando PeerJS como receptor de OBS...");
-    const transmitterId = this.data.peerid;
-    if (!transmitterId) return console.error("Peer ID del transmisor no proporcionado.");
-
-    const call = this.peer.call(transmitterId, null);
-    call.on('stream', (remoteStream) => {
-      console.log("Recibiendo stream OBS...");
-      
-      // Solo asignamos el stream si aún no está asignado.
-      if (!this.streamAssigned) {
-        this.videoElement.srcObject = remoteStream;
-        this.videoElement.oncanplay = () => {
-          console.log("El stream remoto de OBS está listo.");
-          this.videoElement.play();
-          this.updateCanvas();
-          this.streamAssigned = true; // Se asegura de que solo se asigne una vez.
-        };
-      } else {
-        console.warn("El stream de OBS ya estaba asignado.");
-      }
-    });
-
-    call.on('error', (err) => {
-      console.error("Error en la llamada OBS:", err);
-    });
-  },
-
   updateCanvas: function () {
-    if (this.videoElement.readyState >= this.videoElement.HAVE_ENOUGH_DATA) {
-      this.ctx.drawImage(this.videoElement, 0, 0, this.canvas.width, this.canvas.height);
-      this.texture.needsUpdate = true;
-    } else {
-      console.warn("El stream de OBS aún no tiene suficientes datos.");
-    }
-    requestAnimationFrame(this.updateCanvas.bind(this));
+    const updateFrame = () => {
+      if (this.videoElement.readyState >= this.videoElement.HAVE_ENOUGH_DATA) {
+        this.ctx.drawImage(this.videoElement, 0, 0, this.canvas.width, this.canvas.height);
+        this.texture.needsUpdate = true;
+      } else {
+        console.warn("OBS aún no tiene suficientes datos.");
+      }
+      requestAnimationFrame(updateFrame);
+    };
+
+    updateFrame();
   }
 });
