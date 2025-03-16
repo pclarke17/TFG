@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Streaming A-Frame a OBS</title>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-environment-component@1.3.3/dist/aframe-environment-component.min.js"></script>
+    <script src="video-component.js"></script>
+</head>
+<body>
+    <a-scene id="scene">
+        <a-entity id="camera" camera position="0 1.6 0" look-controls wasd-controls>
+            <a-entity cursor="rayOrigin: mouse" raycaster></a-entity>
+        </a-entity>
+        <a-entity environment="preset: forest"></a-entity>
+        <a-box position="-3 1 -3" width="4" height="2.25" depth="0.1"
+        video-canvas-texture="videoSrc: video.mp4">
+        </a-box>
+        
+        <a-sky color="#ECECEC"></a-sky>
+    </a-scene>
+
+    <!-- Cargar el script externo -->
+    <script src="OBS.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          console.log("✅ DOM Cargado. Buscando videos...");
+          const videoElements = document.querySelectorAll('[video-canvas-texture]');
+          videoElements.forEach(el => {
+            console.log("🔍 Video detectado:", el);
+            const component = el.components['video-canvas-texture'];
+            if (component && component.startCanvasUpdate) {
+              component.startCanvasUpdate();
+            }
+          });
+        });
+      </script>
+</body>
+</html>
