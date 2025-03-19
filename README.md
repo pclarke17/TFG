@@ -3,7 +3,7 @@ Escenarios locales:
 ##-Escenario con dos videos en la escena(space-sound)
 En esta escena se puede encontrar dos videos con un botón para cada uno de ellos para hacer play/pause independientemente. De esta manera podremos comprobar en las gafas la funcinalidad de sonido espacial.
 Para poder acceder y visualizar la escena, se comparte la URL de github pages:
-https://pclarke17.github.io/TFG/video-webrtc
+https://pclarke17.github.io/TFG/video-webrtc 
 
 ##-Escenario con dron.
 En esta escena, podremos encontrar un objeto que se va moviendo de forma independiente por la escena, el cual posee una cámara que se visualiza en una pantalla dentro de la escena.
