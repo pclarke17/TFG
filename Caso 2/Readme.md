@@ -97,7 +97,7 @@ openssl req -x509 -newkey rsa:4096 -keyout cert/key.pem -out cert/cert.pem -days
 
 Una vez se acceda a la escena, nos encontraremos con distintos botones de carácter HTML, en los que podremos apagar/encender el micrófono y la cámara, elegir qué cámara se va a transmitir y con la que el otro usuario nos verá y elegir el fondo de la escena 3D.
 
-
+![](assets/Grabaciondepantalla2025-11-30alas20.16.04-ezgif.com-video-to-gif-converter.gif)
 
 En cuanto a las cámaras, tendremos dos disponibles, la cámara de la escena y la webcam del navegador. Este punto está pensado para dispositivos donde no se puede acceder a sus cámaras propias, como es el caso de las gafas de realidad virtual Meta Quest 3, donde se realizaron las pruebas de visionado de la escena.
 
