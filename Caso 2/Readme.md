@@ -1,7 +1,7 @@
 # 🔗 WebRTC + Videoconferenecia en A-Frame
 
 Este proyecto permite realizar una **videollamada bidireccional** entre dos usuarios utilizando **WebRTC** y visualizando el vídeo dentro de una escena **A-Frame** en 3D/VR.
-![Demo](assets/Grabacion1.gif)
+[Demo](assets/Grabacion1.gif)
 
 ## ¿Cómo funciona?
 
