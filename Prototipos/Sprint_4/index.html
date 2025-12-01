@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WebRTC en A-Frame</title>
+  <!-- A-Frame + Environment Component -->
+  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+  <script src="https://unpkg.com/aframe-environment-component@1.3.3/dist/aframe-environment-component.min.js"></script>
+  <script defer src="webrtc.js"></script>
+</head>
+<body>
+  <!-- Video local oculto -->
+  <video id="localVideo" autoplay playsinline muted style="display: none;"></video>
+
+  <!-- Botones para cambiar cámara -->
+  <button id="btnPrimera" style="position: fixed; top: 20px; left: 20px; z-index: 10;">
+    Primera Persona
+  </button>
+  <button id="btnCenital" style="position: fixed; top: 20px; left: 160px; z-index: 10;">
+    Vista Cenital
+  </button>
+
+  <!-- Selector de fondo -->
+  <label for="bgSelect"
+         style="position: fixed; top: 60px; left: 20px; z-index: 10; color: white;">
+    Fondo:
+  </label>
+  <select id="bgSelect"
+          style="position: fixed; top: 60px; left: 80px; z-index: 10;">
+    <option value="forest">Forest</option>
+    <option value="default">Default</option>
+    <option value="sunset">Sunset</option>
+    <option value="city">City</option>
+    <option value="arches">Arches</option>
+    <option value="threetowers">Three Towers</option>
+    <option value="tron">Tron</option>
+    <option value="snow">Snow</option>
+  </select>
+
+  <a-scene environment="preset: forest; groundColor: #445; skyType: atmosphere;">
+    <a-assets>
+      <a-asset-item
+        id="avatarModel"
+        src="https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Models@master/2.0/Avocado/glTF-Binary/Avocado.glb">
+      </a-asset-item>
+    </a-assets>
+
+    <!-- Cámaras -->
+    <a-camera
+      id="cam-primera"
+      position="0 1.6 0"
+      camera="active: true">
+    </a-camera>
+
+    <a-camera
+      id="cam-cenital"
+      position="0 5 0"
+      rotation="-90 0 0"
+      camera="active: false">
+    </a-camera>
+
+    <!-- Plano que mostrará la cámara local -->
+    <a-plane
+      id="localVideoPlane"
+      position="-1 2 -3"
+      width="1.5"
+      height="1"
+      material="shader: flat;">
+    </a-plane>
+
+    <!-- Canvas oculto para el remoto -->
+    <canvas
+      id="remoteCanvas"
+      width="640"
+      height="480"
+      crossorigin="anonymous"
+      style="display: none;">
+    </canvas>
+
+    <!-- Plano para el video del otro usuario -->
+    <a-plane
+      id="remoteVideoPlane"
+      position="1 2 -3"
+      width="1.6"
+      height="0.9"
+      material="shader: flat;">
+    </a-plane>
+  </a-scene>
+
+  <!-- Scripts de interacción -->
+  <script>
+    // Cambiar cámara activa
+    function switchCam(id) {
+      document.querySelectorAll('a-camera').forEach(cam =>
+        cam.setAttribute('camera', 'active', false)
+      );
+      document.getElementById(id).setAttribute('camera', 'active', true);
+    }
+    document.getElementById('btnPrimera')
+      .addEventListener('click', () => switchCam('cam-primera'));
+    document.getElementById('btnCenital')
+      .addEventListener('click', () => switchCam('cam-cenital'));
+
+    // Cambiar fondo en tiempo real
+    const bgSelect = document.getElementById('bgSelect');
+    bgSelect.addEventListener('change', (e) => {
+      const preset = e.target.value;
+      document.querySelector('a-scene')
+              .setAttribute('environment',
+                `preset: ${preset}; groundColor: #445; skyType: atmosphere`);
+    });
+  </script>
+</body>
+</html>
