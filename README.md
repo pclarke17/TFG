@@ -29,7 +29,9 @@ Esto permite:
 
 - reproducción de vídeos como texturas 3D  
 - visualización de la cámara del usuario dentro de la escena  
-- navegación libre en un entorno WebXR  
+- navegación libre en un entorno WebXR
+
+  ![](assets/Escena_Caso1.gif)
 
 ⚠️ **IMPORTANTE:**  
 La retransmisión hacia OBS no funciona desde GitHub Pages.  
@@ -41,7 +43,7 @@ Para ello es necesario ejecutar el servidor WHIP en local (ver sección 3).
 
 Para lanzar la escena con todas sus funciones:
 
-### ✔ Servir la escena A-Frame
+#### ✔ Servir la escena A-Frame
 
 La escena se puede servir desde la propia URL de GitHub Pages.
 
