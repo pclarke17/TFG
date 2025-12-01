@@ -98,28 +98,21 @@ udp://127.0.0.1:6000
 
 
 Ajustar búfer (200–400 ms recomendado)
+![](assets/Config_OBS.gif)
 
 Si todo está configurado correctamente, la cámara del usuario, los vídeos 3D y el entorno de la escena aparecerán en OBS en tiempo real.
 
-![](assets/Config_OBS.gif)
+![](assets/Escena_OBS.gif)
 
 (Si la escena no se ve en OBS y está todo corriendo, refresca la página donde estes lanzando la escena)
 
-# 6. Componentes utilizados
-
-Componente	Descripción
-video-canvas-texture.js	Renderiza vídeos como texturas 3D dinámicas.
-camera-canvas-texture.js	Captura y proyecta la cámara del usuario en objetos 3D.
-OBS.js	Captura el canvas de A-Frame y envía un flujo WebRTC al servidor WHIP.
-whip_server.py	Recibe la Offer, genera una Answer y reenvía la señal a OBS mediante MPEG-TS/UDP.
----
+--------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # 🔗 WebRTC + Videoconferenecia en A-Frame
 
 Este proyecto permite realizar una **videollamada bidireccional** entre dos usuarios utilizando **WebRTC** y visualizando el vídeo dentro de una escena **A-Frame** en 3D/VR.
 
-
-
+![](assets/Videoconferencia.gif)
 
 
 ## ¿Cómo funciona?
@@ -213,7 +206,7 @@ openssl req -x509 -newkey rsa:4096 -keyout cert/key.pem -out cert/cert.pem -days
 
 Una vez se acceda a la escena, nos encontraremos con distintos botones de carácter HTML, en los que podremos apagar/encender el micrófono y la cámara, elegir qué cámara se va a transmitir y con la que el otro usuario nos verá y elegir el fondo de la escena 3D.
 
-![](assets/Grabaciondepantalla2025-11-30alas20.16.04-ezgif.com-video-to-gif-converter.gif)
+![](assets/botones_escena_videoconferencia.gif)
 
 En cuanto a las cámaras, tendremos dos disponibles, la cámara de la escena y la webcam del navegador. Este punto está pensado para dispositivos donde no se puede acceder a sus cámaras propias, como es el caso de las gafas de realidad virtual Meta Quest 3, donde se realizaron las pruebas de visionado de la escena.
 
