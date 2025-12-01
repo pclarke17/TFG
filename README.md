@@ -98,6 +98,7 @@ udp://127.0.0.1:6000
 
 
 Ajustar búfer (200–400 ms recomendado)
+
 ![](assets/Config_OBS.gif)
 
 Si todo está configurado correctamente, la cámara del usuario, los vídeos 3D y el entorno de la escena aparecerán en OBS en tiempo real.
