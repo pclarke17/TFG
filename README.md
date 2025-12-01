@@ -233,7 +233,12 @@ El proyecto se estructura en diversos módulos coherentes con la memoria:
 
 - **`index.html`**  
   Escena de demostración que integra todos los componentes del sistema.
+  
+- **` webrtc.js`**
+  Implementa una conexión WebRTC bidireccional que permite a los usuarios participar en videoconferencias dentro del escenario VR
 
+-  **` server.js`**
+  Servidor de señalización WebRTC implementado con WebSocket seguro (WSS)
 ---
 
 ##  Tecnologías utilizadas
