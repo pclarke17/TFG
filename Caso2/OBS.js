@@ -71,7 +71,7 @@ async function startWebRTC(videoStream) {
 
     console.log("📨 Enviando SDP Offer al servidor WHIP...");
 
-    const res = await fetch("https://192.168.1.119:8080/whip", {
+    const res = await fetch("https://localhost:8080/whip", {
         method: "POST",
         headers: { "Content-Type": "application/sdp" },
         body: pc.localDescription.sdp
