@@ -11,7 +11,7 @@ El proyecto aborda dos **casos de uso fundamentales**:
 
 Este caso de uso muestra cómo integrar vídeos, cámara del usuario y contenido tridimensional dentro de una escena A-Frame, y cómo transmitir dicha escena en tiempo real a **OBS Studio** mediante un servidor WHIP desarrollado en Python.
 
-<img src="assets/Config_OBS.gif" width="400">
+<img src="assets/Caso1.png" width="400">
 
 
 La escena funciona **por sí sola**, sin necesidad de OBS ni del servidor WHIP.  
