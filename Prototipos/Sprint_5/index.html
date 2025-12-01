@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Videoconferencia WebRTC + A-Frame</title>
+  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+  <script src="https://unpkg.com/aframe-environment-component@1.3.3/dist/aframe-environment-component.min.js"></script>
+  <script src="webrtc.js"></script>
+  <style>
+    #ui {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      font-family: Arial;
+      z-index: 1000;
+    }
+    select, button, label {
+      margin: 5px;
+      padding: 5px;
+    }
+    #webcamStatus {
+      color: yellow;
+    }
+    #bgSelect {
+      position: fixed;
+      top: 60px;
+      left: 80px;
+      z-index: 10;
+    }
+    #bgSelectLabel {
+      position: fixed;
+      top: 60px;
+      left: 20px;
+      z-index: 10;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div id="ui">
+    <div id="webcamStatus">Esperando fuente de video...</div>
+    <select id="videoSourceSelect">
+      <option value="scene">Escena A-Frame</option>
+      <option value="webcam">Webcam</option>
+    </select>
+    <br>
+    <label id="bgSelectLabel" for="bgSelect">Fondo:</label>
+    <select id="bgSelect">
+      <option value="default">Default</option>
+      <option value="forest">Forest</option>
+      <option value="arches">Arches</option>
+      <option value="yavapai">Yavapai</option>
+      <option value="tron">Tron</option>
+    </select>
+  </div>
+
+  <a-scene>
+    <a-assets>
+      <video id="localVideo" autoplay muted playsinline crossorigin="anonymous"></video>
+      <canvas id="remoteCanvas" width="320" height="240" style="position: absolute; top: -9999px; left: -9999px;"></canvas>
+    </a-assets>
+
+    <a-entity id="environment" environment="preset: default; groundColor: #445; skyType: atmosphere;"></a-entity>
+    <a-plane id="localVideoPlane" position="-1 2 -3" width="1.6" height="0.9" material="shader: flat" visible="true"></a-plane>
+    <a-plane id="remoteVideoPlane" position="1 2 -3" width="1.6" height="0.9" material="shader: flat" visible="false"></a-plane>
+    <a-entity camera look-controls position="0 1.6 0"></a-entity>
+  </a-scene>
+
+  <script>
+    // Cambiar el fondo de la escena
+    document.getElementById('bgSelect').addEventListener('change', function () {
+      const environment = document.getElementById('environment');
+      const selectedPreset = this.value;
+      environment.setAttribute('environment', `preset: ${selectedPreset}`);
+      console.log(`🌌 Fondo cambiado a: ${selectedPreset}`);
+    });
+  </script>
+</body>
+</html>
