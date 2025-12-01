@@ -101,6 +101,8 @@ Ajustar búfer (200–400 ms recomendado)
 
 Si todo está configurado correctamente, la cámara del usuario, los vídeos 3D y el entorno de la escena aparecerán en OBS en tiempo real.
 
+![](assets/Config_OBS.gif)
+
 (Si la escena no se ve en OBS y está todo corriendo, refresca la página donde estes lanzando la escena)
 
 # 6. Componentes utilizados
