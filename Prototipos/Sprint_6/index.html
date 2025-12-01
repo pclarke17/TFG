@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Escena A-Frame con Todos los Componentes</title>
+  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+  <script src="video-component.js"></script>
+  <script src="Camara-component.js"></script>
+  <script src="webrtc.js"></script>
+  <script src="OBS.js"></script>
+</head>
+<body>
+  <a-scene>
+    <!-- Cámara del usuario con raycaster optimizado -->
+    <a-camera position="0 1.6 0" raycaster="objects: .clickable">
+      <a-cursor></a-cursor>
+    </a-camera>
+
+    <!-- Plano de Video -->
+    <a-plane id="videoPlane" position="-3 1.6 -2" width="2" height="1.125" video-canvas-texture="videoSrc:video.mp4">
+      <a-entity text="value: Video; align: center; width: 2; color: white; zOffset: 0.01" position="0 0.7 0"></a-entity>
+    </a-plane>>
+
+    <!-- Plano de Cámara -->
+    <a-plane id="cameraPlane" position="-1 1.6 -2" width="2" height="1.125"  camera-canvas-texture>
+      <a-entity text="value: Cámara; align: center; width: 2; color: white; zOffset: 0.01" position="0 0.7 0"></a-entity>
+    </a-plane>
+
+    <!-- Plano que mostrará la cámara local -->
+    <a-plane
+      id="localVideoPlane"
+      position="-1 2 -3"
+      width="1.5"
+      height="1"
+      material="shader: flat;">
+    </a-plane>
+
+    <!-- Canvas oculto para el remoto -->
+    <canvas
+      id="remoteCanvas"
+      width="640"
+      height="480"
+      crossorigin="anonymous"
+      style="display: none;">
+    </canvas>
+
+    <!-- Plano para el video del otro usuario -->
+    <a-plane
+      id="remoteVideoPlane"
+      position="1 2 -3"
+      width="1.6"
+      height="0.9"
+      material="shader: flat;">
+    </a-plane>
+
+    <!-- Plano de OBS -->
+    <a-plane id="obsPlane" position="0 3.2 -2" width="2" height="1.125" material="src: #sceneCanvas">
+      <a-entity text="value: OBS; align: center; width: 2; color: white; zOffset: 0.01" position="0 0.7 0"></a-entity>
+    </a-plane>
+ 
+    <!-- Canvas para la escena OBS -->
+    <canvas id="sceneCanvas" style="display: none;"></canvas>
+
+    <!-- Fondo de la escena -->
+    <a-sky src="https://cdn.aframe.io/360-image-gallery-boilerplate/img/sechelt.jpg"></a-sky>
+  </a-scene>
+
+   <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log("✅ DOM Cargado. Buscando videos...");
+      const videoElements = document.querySelectorAll('[video-canvas-texture]');
+      videoElements.forEach(el => {
+        console.log("🔍 Video detectado:", el);
+        const component = el.components['video-canvas-texture'];
+        if (component && component.startCanvasUpdate) {
+          component.startCanvasUpdate();
+        }
+      });
+    });
+  </script>
+  <script>
+    // Iniciar OBS y capturar el canvas de la escena
+    const sceneEl = document.querySelector('a-scene');
+    sceneEl.addEventListener('loaded', () => {
+      const sceneCanvas = sceneEl.renderer.domElement;
+      const obsCanvas = document.querySelector('#sceneCanvas');
+      obsCanvas.width = sceneCanvas.width;
+      obsCanvas.height = sceneCanvas.height;
+      const ctx = obsCanvas.getContext('2d');
+      function updateCanvas() {
+        ctx.drawImage(sceneCanvas, 0, 0);
+        requestAnimationFrame(updateCanvas);
+      }
+      updateCanvas();
+
+      // Iniciar OBS
+      console.log('📡 Iniciando transmisión a OBS...');
+      window.startStreaming();
+    });
+    
+  </script>
+
+</body>
+</html>
