@@ -67,6 +67,8 @@ Colócalos dentro del archivo whip_server.py y en la misma carpeta donde se encu
 
 No necesitas generar certificados ni ejecutar el servidor WHIP.
 
+---
+
 ### 3. Arrancar el servidor WHIP (opcional)
 
 Si deseas enviar vídeo a OBS, ejecuta:
@@ -81,6 +83,8 @@ En el terminal deberías de ver:
 
 
 Este servidor recibe la señal WebRTC de A-Frame, la procesa y la reenvía a OBS en formato MPEG-TS.
+
+---
 
 ### 4. Configurar OBS Studio (opcional)
 
