@@ -58,7 +58,7 @@ key.pem
 
 Colócalos dentro del archivo whip_server.py y en la misma carpeta donde se encuentre el archivo:
 
-  # HTTPS con la ruta de tus certificados
+  #### HTTPS con la ruta de tus certificados
     ssl_ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
     ssl_ctx.load_cert_chain(
         "/Users/pabloclarke/Documents/TFG/Video/cert.pem",
