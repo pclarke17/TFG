@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Video en Canvas con A-Frame (Iniciar con Botón)</title>
+  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+  <script src="video-canvas-texture.js"></script>
+  <script src="camera-canvas-texture.js"></script>
+  <script src="https://unpkg.com/aframe-environment-component@1.3.3/dist/aframe-environment-component.min.js"></script>
+  <script src="OBS.js"></script>
+
+</head>
+<body>
+  <a-scene>
+    <a-entity id="camera" camera position="0 1.6 0" look-controls wasd-controls>
+        <a-entity cursor="rayOrigin: mouse" raycaster></a-entity>
+    </a-entity>
+    <a-entity environment="preset: forest"></a-entity>
+
+    
+    <a-camera position="0 1.6 5"></a-camera>
+
+    <!-- Video 1 -->
+    <a-box position="-3 1 -3" width="4" height="2.25" depth="0.1"
+           video-canvas-texture="videoSrc: video.mp4">
+    </a-box>
+
+    <a-box id="video-box" position="-5 1 2" rotation="0 90" depth="0.1"  width="4" height="2.25" Camara-component></a-box>
+
+    <!-- Video 2 -->
+    <a-box position="5 1 2"  rotation="0 -90"width="4" height="2.25" depth="0.1"
+           video-canvas-texture="videoSrc: video2.0.mp4">
+    </a-box>
+
+    <a-light type="directional" position="-1 2 3" intensity="1.5"></a-light>
+    <a-sky color="#ECECEC"></a-sky>
+  </a-scene>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log("✅ DOM Cargado. Buscando videos...");
+      const videoElements = document.querySelectorAll('[video-canvas-texture]');
+      document.querySelector('#video-box').setAttribute('camera-canvas-texture', 'role: transmitter');
+      videoElements.forEach(el => {
+        console.log("🔍 Video detectado:", el);
+        const component = el.components['video-canvas-texture'];
+        if (component && component.startCanvasUpdate) {
+          component.startCanvasUpdate();
+        }
+      });
+    });
+  </script>
+
+   <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          console.log("✅ DOM Cargado. Buscando videos...");
+          const videoElements = document.querySelectorAll('[video-canvas-texture]');
+          videoElements.forEach(el => {
+            console.log("🔍 Video detectado:", el);
+            const component = el.components['video-canvas-texture'];
+            if (component && component.startCanvasUpdate) {
+              component.startCanvasUpdate();
+            }
+          });
+        });
+      </script>
+   <script>
+window.addEventListener("load", () => {
+    const scene = document.querySelector("a-scene");
+
+    scene.addEventListener("renderstart", () => {
+        console.log("🔥 renderstart → ajustando canvas ANTES del primer frame");
+
+        const renderer = scene.renderer;
+        const canvas = scene.canvas;
+
+        // Forzar tamaño real de renderizado
+        renderer.setSize(1280, 720, false);
+
+        // Forzar buffer interno
+        canvas.width = 1280;
+        canvas.height = 720;
+
+        // Opcional: estilo visual
+        canvas.style.width = "1280px";
+        canvas.style.height = "720px";
+
+        console.log("🎉 Canvas real:", canvas.width, canvas.height);
+    });
+});
+</script>
+
+
+</body>
+</html>
+
+
