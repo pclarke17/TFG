@@ -112,7 +112,7 @@ OBS.js	Captura el canvas de A-Frame y envía un flujo WebRTC al servidor WHIP.
 whip_server.py	Recibe la Offer, genera una Answer y reenvía la señal a OBS mediante MPEG-TS/UDP.
 ---
 
-## 🟩 Caso de uso 2: Videoconferencia tridimensional en tiempo real
+##  Caso de uso 2: Videoconferencia tridimensional en tiempo real
 
 Este caso de uso implementa un sistema de comunicación audiovisual entre usuarios utilizando **WebRTC**, donde:
 
@@ -125,7 +125,7 @@ Este escenario demuestra cómo WebRTC puede extenderse más allá de videollamad
 
 ---
 
-## 🧩 Componentes principales del repositorio
+##  Componentes principales del repositorio
 
 El proyecto se estructura en diversos módulos coherentes con la memoria:
 
@@ -146,7 +146,7 @@ El proyecto se estructura en diversos módulos coherentes con la memoria:
 
 ---
 
-## 🛠️ Tecnologías utilizadas
+##  Tecnologías utilizadas
 
 - **A-Frame** y **Three.js** para la construcción de entornos WebXR.  
 - **WebRTC** para captura, transporte y comunicación audiovisual.  
