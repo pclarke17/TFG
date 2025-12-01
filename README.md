@@ -9,15 +9,65 @@ El proyecto aborda dos **casos de uso fundamentales**:
 
 ## 🟦 Caso de uso 1: Visualización multimedia y retransmisión hacia OBS
 
-Este caso de uso demuestra cómo una escena A-Frame puede funcionar como **fuente multimedia en vivo**, integrando:
+Este caso de uso muestra cómo integrar vídeos, cámara del usuario y contenido tridimensional dentro de una escena A-Frame, y cómo transmitir dicha escena en tiempo real a **OBS Studio** mediante un servidor WHIP desarrollado en Python.
 
-- Reproducción de vídeo como texturas dinámicas en objetos 3D.  
-- Captura de la cámara del usuario y renderizado en la propia escena.  
-- Captura del punto de vista del usuario.  
-- Envío del flujo WebRTC a un servidor WHIP basado en Python.  
-- Transcodificación y retransmisión a **OBS Studio** en formato MPEG-TS/UDP.
+La escena funciona **por sí sola**, sin necesidad de OBS ni del servidor WHIP.  
+La integración con OBS es **opcional** y solamente se requiere si deseas retransmitir la escena o utilizarla como fuente de vídeo en directo.
 
-Permite convertir una escena WebXR en **una señal de vídeo real** apta para streaming, producción audiovisual o integración con plataformas externas.
+---
+
+# 🌐 1. Ejecutar la escena desde GitHub Pages (sin instalación)
+
+La escena puede visualizarse directamente desde:
+
+👉 **https://pclarke17.github.io/TFG/Caso_1
+
+Esto permite:
+
+- reproducción de vídeos como texturas 3D  
+- visualización de la cámara del usuario dentro de la escena  
+- navegación libre en un entorno WebXR  
+
+⚠️ **IMPORTANTE:**  
+La retransmisión hacia OBS no funciona desde GitHub Pages.  
+Para ello es necesario ejecutar el servidor WHIP en local (ver sección 3).
+
+---
+
+# 2. Ejecutar el Caso de Uso 1 en local
+
+Para lanzar la escena con todas sus funciones:
+
+### ✔ Servir la escena A-Frame
+
+La escena se puede servir desde la propia URL de GitHub Pages.
+
+#3. Generar certificados HTTPS (requerido SOLO si quieres usar OBS)
+
+El servidor WHIP funciona exclusivamente por HTTPS, ya que WebRTC no permite conexiones inseguras fuera de localhost.
+
+Para ejecutarlo, necesitas generar un certificado autofirmado:
+
+openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 365 -nodes
+
+Esto creará:
+
+cert.pem
+
+key.pem
+
+Colócalos junto a whip_server.py.
+
+  # HTTPS con la ruta de tus certificados
+    ssl_ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    ssl_ctx.load_cert_chain(
+        "/Users/pabloclarke/Documents/TFG/Video/cert.pem",
+        "/Users/pabloclarke/Documents/TFG/Video/key.pem"
+    )
+    
+✔ Si NO deseas enviar la escena a OBS:
+
+No necesitas generar certificados ni ejecutar el servidor WHIP.
 
 ---
 
