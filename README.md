@@ -16,7 +16,7 @@ La integración con OBS es **opcional** y solamente se requiere si deseas retran
 
 ---
 
-# 🌐 1. Ejecutar la escena desde GitHub Pages (sin instalación)
+### 🌐 1. Ejecutar la escena desde GitHub Pages (sin instalación)
 
 La escena puede visualizarse directamente desde:
 
@@ -34,7 +34,7 @@ Para ello es necesario ejecutar el servidor WHIP en local (ver sección 3).
 
 ---
 
-# 2. Ejecutar el Caso de Uso 1 en local
+### 2. Ejecutar el Caso de Uso 1 en local
 
 Para lanzar la escena con todas sus funciones:
 
@@ -42,7 +42,7 @@ Para lanzar la escena con todas sus funciones:
 
 La escena se puede servir desde la propia URL de GitHub Pages.
 
-# 3. Generar certificados HTTPS (requerido SOLO si quieres usar OBS)
+### 3. Generar certificados HTTPS (requerido SOLO si quieres usar OBS)
 
 El servidor WHIP funciona exclusivamente por HTTPS, ya que WebRTC no permite conexiones inseguras fuera de localhost.
 
@@ -69,7 +69,7 @@ Colócalos dentro del archivo whip_server.py y en la misma carpeta donde se encu
 
 No necesitas generar certificados ni ejecutar el servidor WHIP.
 
-# 4. Arrancar el servidor WHIP (opcional)
+### 4. Arrancar el servidor WHIP (opcional)
 
 Si deseas enviar vídeo a OBS, ejecuta:
 
@@ -84,7 +84,7 @@ En el terminal deberías de ver:
 
 Este servidor recibe la señal WebRTC de A-Frame, la procesa y la reenvía a OBS en formato MPEG-TS.
 
-# 5. Configurar OBS Studio (opcional)
+### 5. Configurar OBS Studio (opcional)
 
 Solo necesario si quieres transmitir la escena.
 
