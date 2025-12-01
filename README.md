@@ -56,7 +56,7 @@ cert.pem
 
 key.pem
 
-Colócalos junto a whip_server.py.
+Colócalos dentro del archivo whip_server.py y en la misma carpeta donde se encuentre el archivo:
 
   # HTTPS con la ruta de tus certificados
     ssl_ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
@@ -69,6 +69,47 @@ Colócalos junto a whip_server.py.
 
 No necesitas generar certificados ni ejecutar el servidor WHIP.
 
+# 4. Arrancar el servidor WHIP (opcional)
+
+Si deseas enviar vídeo a OBS, ejecuta:
+
+python3 whip_server.py
+
+
+En el terminal deberías de ver: 
+
+🚀 WHIP HTTPS escuchando en https://0.0.0.0:8080/whip
+💾 Enviando señal en vivo a OBS por UDP → udp://127.0.0.1:6000
+
+
+Este servidor recibe la señal WebRTC de A-Frame, la procesa y la reenvía a OBS en formato MPEG-TS.
+
+# 5. Configurar OBS Studio (opcional)
+
+Solo necesario si quieres transmitir la escena.
+
+Añadir fuente → Captura de entrada multimedia
+
+Elegir Red (URL)
+
+Introducir:
+
+udp://127.0.0.1:6000
+
+
+Ajustar búfer (200–400 ms recomendado)
+
+Si todo está configurado correctamente, la cámara del usuario, los vídeos 3D y el entorno de la escena aparecerán en OBS en tiempo real.
+
+(Si la escena no se ve en OBS y está todo corriendo, refresca la página donde estes lanzando la escena)
+
+# 6. Componentes utilizados
+
+Componente	Descripción
+video-canvas-texture.js	Renderiza vídeos como texturas 3D dinámicas.
+camera-canvas-texture.js	Captura y proyecta la cámara del usuario en objetos 3D.
+OBS.js	Captura el canvas de A-Frame y envía un flujo WebRTC al servidor WHIP.
+whip_server.py	Recibe la Offer, genera una Answer y reenvía la señal a OBS mediante MPEG-TS/UDP.
 ---
 
 ## 🟩 Caso de uso 2: Videoconferencia tridimensional en tiempo real
