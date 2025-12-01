@@ -42,7 +42,7 @@ Para lanzar la escena con todas sus funciones:
 
 La escena se puede servir desde la propia URL de GitHub Pages.
 
-#3. Generar certificados HTTPS (requerido SOLO si quieres usar OBS)
+# 3. Generar certificados HTTPS (requerido SOLO si quieres usar OBS)
 
 El servidor WHIP funciona exclusivamente por HTTPS, ya que WebRTC no permite conexiones inseguras fuera de localhost.
 
