@@ -1,255 +1,79 @@
-## 🚀 Guía rápida de instalación (Quick Start)
+# 🎥 Comunicación Multimedia en Realidad Extendida  
+### Trabajo de Fin de Grado 
 
-Esta sección explica cómo instalar y ejecutar la caja de herramientas VR desarrollada en este proyecto.  
-El objetivo es que puedas levantar el entorno rápidamente y comprobar el funcionamiento de los componentes:
+Este repositorio contiene la implementación completa del Trabajo de Fin de Grado **“Comunicación multimedia en realidad extendida”**, cuyo objetivo principal es explorar y diseñar un sistema capaz de **integrar vídeo, audio y comunicación en tiempo real dentro de entornos 3D interactivos basados en WebXR y A-Frame**.
 
-- `video-canvas-texture`
-- `camera-canvas-texture`
-- `OBS.js`
-- `webrtc.js`
+El proyecto aborda dos **casos de uso fundamentales**:
 
 ---
 
-### 1️⃣ Requisitos previos
+## 🟦 Caso de uso 1: Visualización multimedia y retransmisión hacia OBS
 
-Antes de empezar, asegúrate de tener:
+Este caso de uso demuestra cómo una escena A-Frame puede funcionar como **fuente multimedia en vivo**, integrando:
 
-- Sistema operativo: **Windows**, **macOS** o **Linux**
-- **Node.js** versión **16** o superior
-- **Python 3.8** o superior (para los componentes que usan OBS/FFmpeg)
-- Navegador compatible con **WebXR**:
-  - Google Chrome
-  - Mozilla Firefox
-- Editor de texto o IDE (por ejemplo, **Visual Studio Code**)
-- Conexión a Internet para descargar dependencias
+- Reproducción de vídeo como texturas dinámicas en objetos 3D.  
+- Captura de la cámara del usuario y renderizado en la propia escena.  
+- Captura del punto de vista del usuario.  
+- Envío del flujo WebRTC a un servidor WHIP basado en Python.  
+- Transcodificación y retransmisión a **OBS Studio** en formato MPEG-TS/UDP.
 
----
-
-### 2️⃣ Clonar el repositorio
-
-Clona el repositorio o descarga el código desde GitHub:
-
-```bash
-git clone https://github.com/
-pclarke17/TFG
-
-
-# 🎥 VR Multimedia Toolbox — Caso 1 (A-Frame + WebRTC + WHIP + OBS)
-
-Este repositorio incluye una caja de herramientas para integrar contenido multimedia en escenas de realidad virtual con A-Frame, permitiendo:
-
-- reproducir vídeos como texturas 3D,
-- mostrar la señal de la cámara o una cámara virtual,
-- capturar la escena completa de WebGL,
-- enviarla mediante WebRTC usando el protocolo **WHIP**,
-- y recibirla en **OBS Studio** vía MPEG-TS/UDP.
-
-El **Caso 1** agrupa todos estos elementos en una escena VR funcional.
+Permite convertir una escena WebXR en **una señal de vídeo real** apta para streaming, producción audiovisual o integración con plataformas externas.
 
 ---
 
-## 📦 1. Componentes del Caso 1
+## 🟩 Caso de uso 2: Videoconferencia tridimensional en tiempo real
 
-### 🎞 `video-canvas-texture.js`
+Este caso de uso implementa un sistema de comunicación audiovisual entre usuarios utilizando **WebRTC**, donde:
 
-Permite usar un archivo de vídeo como textura de cualquier entidad 3D usando un `<canvas>` actualizado en tiempo real.
+- Se establece señalización mediante WebSocket.
+- Cada usuario captura su cámara local.
+- Los flujos remotos se integran como texturas en entidades 3D.
+- Se construye una experiencia de comunicación inmersiva dentro de una escena A-Frame.
 
-**Ejemplo de uso:**
+Este escenario demuestra cómo WebRTC puede extenderse más allá de videollamadas tradicionales para generar **experiencias tridimensionales interactivas**.
 
-```html
-<a-box width="4" height="2.25" depth="0.1"
-       video-canvas-texture="videoSrc: video.mp4"></a-box>
-Características:
+---
 
-Crea un <video> oculto.
+## 🧩 Componentes principales del repositorio
 
-Copia cada frame en un <canvas>.
+El proyecto se estructura en diversos módulos coherentes con la memoria:
 
-Usa ese canvas como textura WebGL.
+- **`video-canvas-texture.js`**  
+  Permite usar vídeos locales o remotos como texturas dinámicas.
 
-Expone métodos como startCanvasUpdate() y pauseCanvasUpdate().
+- **`camera-canvas-texture.js`**  
+  Captura la cámara del usuario y la integra en la escena como textura.
 
-Inicialización automática incluida en index.html:
+- **`OBS.js`**  
+  Captura el punto de vista del usuario y establece una sesión WHIP para enviar vídeo hacia OBS.
 
-js
-Copiar código
-const videoElements = document.querySelectorAll('[video-canvas-texture]');
-videoElements.forEach(el => {
-  const component = el.components['video-canvas-texture'];
-  if (component && component.startCanvasUpdate) {
-    component.startCanvasUpdate();
-  }
-});
-📷 camera-canvas-texture.js
-Muestra la cámara del sistema o una cámara virtual (OBS Virtual Camera) como textura sobre un objeto 3D.
+- **`whip_server.py`**  
+  Servidor Python basado en `aiortc` y `PyAV` que recibe flujos WebRTC y los retransmite a OBS mediante MPEG-TS/UDP.
 
-Ejemplo de uso:
+- **`index.html`**  
+  Escena de demostración que integra todos los componentes del sistema.
 
-html
-Copiar código
-<a-box id="video-box" width="4" height="2.25"
-       camera-canvas-texture></a-box>
-Características:
+---
 
-Detecta automáticamente la cámara virtual de OBS.
+## 🛠️ Tecnologías utilizadas
 
-Si no está disponible, usa la webcam.
+- **A-Frame** y **Three.js** para la construcción de entornos WebXR.  
+- **WebRTC** para captura, transporte y comunicación audiovisual.  
+- **WHIP (WebRTC-HTTP Ingestion Protocol)** para ingestión del flujo hacia el servidor.  
+- **OBS Studio** para visualización y retransmisión.  
+- **Python + aiortc + PyAV** para procesar vídeo y reenviarlo como MPEG-TS.  
 
-Copia los fotogramas en un canvas y actualiza la textura en tiempo real.
+Estas tecnologías permiten combinar XR, comunicación en tiempo real y producción multimedia en un mismo sistema Web.
 
-🌄 2. Escena VR del Caso 1 (index.html)
-Incluye:
+---
 
-dos vídeos integrados como texturas,
+## 🎯 Finalidad del proyecto
 
-un cubo con la señal de cámara,
+El TFG demuestra cómo es posible **integrar canales multimedia complejos en un entorno XR accesible desde el navegador**, habilitando aplicaciones como:
 
-un entorno generado con aframe-environment-component,
+- Streaming inmersivo  
+- Telepresencia 3D  
+- Escenarios de producción audiovisual interactiva  
+- Espacios colaborativos WebXR con vídeo en tiempo real  
 
-inicialización automática de componentes.
-
-Ejemplo:
-
-html
-Copiar código
-<a-box position="-3 1 -3"
-       video-canvas-texture="videoSrc: video.mp4"></a-box>
-
-<a-box position="5 1 2"
-       video-canvas-texture="videoSrc: video2.0.mp4"></a-box>
-
-<a-box id="video-box"></a-box>
-
-<script>
-  document.querySelector('#video-box')
-          .setAttribute('camera-canvas-texture', 'role: transmitter');
-</script>
-🔥 3. Captura de escena y envío WHIP (OBS.js)
-OBS.js captura la escena completa usando:
-
-js
-Copiar código
-const stream = canvas.captureStream(30);
-Luego:
-
-Crea un RTCPeerConnection.
-
-Añade pistas de vídeo y audio.
-
-Genera una SDP Offer.
-
-La envía al servidor WHIP:
-
-js
-Copiar código
-const response = await fetch("https://TU-IP:8080/whip", {
-  method: "POST",
-  headers: { "Content-Type": "application/sdp" },
-  body: offer.sdp
-});
-Recibe la SDP Answer.
-
-Establece la conexión WebRTC.
-
-Envía vídeo + audio en tiempo real.
-
-🛰️ 4. Servidor WHIP (whip_server.py)
-El servidor WHIP:
-
-recibe la oferta del navegador,
-
-genera la respuesta SDP,
-
-usa aiortc para gestionar la sesión WebRTC,
-
-decodifica vídeo con PyAV,
-
-reenvía la señal a OBS mediante MPEG-TS/UDP.
-
-Ejecutarlo:
-
-bash
-Copiar código
-python whip_server.py
-Requiere:
-
-cert.pem
-
-key.pem
-
-Salida por defecto:
-
-cpp
-Copiar código
-udp://127.0.0.1:9999
-📡 5. Configuración de OBS Studio
-OBS recibe el flujo reenviado por el servidor WHIP.
-
-Pasos:
-
-Abrir OBS Studio.
-
-Añadir Fuente → Media Source.
-
-Desactivar “Local File”.
-
-Introducir la ruta:
-
-cpp
-Copiar código
-udp://127.0.0.1:9999
-Activar “Restart playback when source becomes active”.
-
-OBS mostrará la escena VR cuando WHIP esté conectado.
-
-🔁 6. Flujo completo del Caso 1
-css
-Copiar código
-A-Frame (vídeos + cámara + entorno)
-        ↓
-canvas.captureStream()
-        ↓
-WebRTC → WHIP (POST /whip)
-        ↓
-whip_server.py (aiortc + PyAV)
-        ↓
-MPEG-TS/UDP
-        ↓
-OBS Studio (Media Source)
-🧪 7. Prueba rápida
-Abrir OBS Studio y añadir la fuente UDP.
-
-Iniciar el servidor WHIP:
-
-bash
-Copiar código
-python whip_server.py
-Servir el proyecto:
-
-bash
-Copiar código
-npx http-server .
-Abrir la escena:
-
-arduino
-Copiar código
-https://localhost:8080
-Verificar que OBS recibe el vídeo de la escena.
-
-🚨 8. Problemas frecuentes
-OBS aparece en negro
-El servidor WHIP no está ejecutándose.
-
-El puerto UDP está bloqueado.
-
-La escena no está enviando pistas WebRTC.
-
-No funciona la cámara
-Falta de permisos del navegador.
-
-OBS Virtual Camera no está iniciada.
-
-Error SSL al conectar WHIP
-El navegador exige HTTPS para WebRTC + captura de canvas
-
-
+---
